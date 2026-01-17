@@ -3,11 +3,11 @@ import openai
 import json
 from openai import OpenAI
 import os
-from dotenv import load_dotenv
+# from dotenv import load_dotenv
 
-load_dotenv()
+# load_dotenv()
 
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
+# OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY")
 
 
 def generate_image(prompt: str, quality: str = "standard") -> str:
@@ -63,7 +63,7 @@ def chat():
                     "content": message["content"],
                 })
         
-        client = OpenAI(api_key=OPENAI_API_KEY)
+        client = OpenAI()
 
         tools = [
             {
