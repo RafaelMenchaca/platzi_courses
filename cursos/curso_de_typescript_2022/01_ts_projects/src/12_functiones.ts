@@ -47,4 +47,13 @@
     console.log(producto2.stock);
     console.log(producto2.size);
 
+    const producto3 = createProductToJsonV2("P1", new Date(), 12);
+    console.log(producto3);
+    console.log(producto3.title);
+    console.log(producto3.createAt);
+    console.log(producto3.stock);
+    console.log(producto3.size);
+
+    
+
 })();
