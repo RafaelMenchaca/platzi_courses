@@ -1,1 +1,0 @@
-# Platzi Vision API (BackEnd)

@@ -1,1 +1,0 @@
-# Platzi Vision UI (FrontEnd)
