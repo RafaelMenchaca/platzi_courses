@@ -1,6 +1,8 @@
 import { FC } from "react";
 import Link from "next/link";
 import { CourseDetail } from "@/types";
+import { StarRating } from "@/components/StarRating/StarRating";
+import { RateCourse } from "@/components/RateCourse/RateCourse";
 import styles from "./CourseDetail.module.scss";
 
 interface CourseDetailComponentProps {
@@ -25,16 +27,27 @@ export const CourseDetailComponent: FC<CourseDetailComponentProps> = ({ course }
       </div>
       <div className={styles.header}>
         <div className={styles.thumbnailContainer}>
-          <img src={course.thumbnail} alt={course.title} className={styles.thumbnail} />
+          <img src={course.thumbnail} alt={course.name} className={styles.thumbnail} />
         </div>
         <div className={styles.courseInfo}>
-          <h1 className={styles.title}>{course.title}</h1>
-          <p className={styles.teacher}>Por {course.teacher}</p>
+          <h1 className={styles.title}>{course.name}</h1>
+          {typeof course.average_rating === "number" && (
+            <div className={styles.ratingSummary}>
+              <StarRating
+                rating={course.average_rating}
+                totalRatings={course.total_ratings}
+                showCount={true}
+                size="medium"
+                readonly={true}
+              />
+            </div>
+          )}
           <p className={styles.description}>{course.description}</p>
           <div className={styles.stats}>
             <span className={styles.duration}>Duración total: {formatDuration(totalDuration)}</span>
             <span className={styles.classCount}>{course.classes.length} clases</span>
           </div>
+          <RateCourse courseId={course.id} />
         </div>
       </div>
 

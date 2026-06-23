@@ -3,8 +3,8 @@
  * Tests unitarios para el componente de calificación con estrellas
  */
 
-import { describe, it, expect } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { describe, it, expect, vi } from 'vitest';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { StarRating } from '../StarRating';
 
@@ -182,6 +182,76 @@ describe('StarRating Component', () => {
       render(<StarRating rating={4.5} readonly={true} showCount={true} totalRatings={50} />);
 
       expect(screen.getByText('(50)')).toBeInTheDocument();
+    });
+
+    it('stays in display mode even with onRate when readonly is true', () => {
+      const onRate = vi.fn();
+      const { container } = render(
+        <StarRating rating={3} readonly={true} onRate={onRate} />
+      );
+
+      // readonly tiene prioridad: no debe haber botones interactivos
+      expect(container.querySelectorAll('button')).toHaveLength(0);
+      expect(screen.getByRole('img')).toBeInTheDocument();
+    });
+  });
+
+  describe('Interactive Mode', () => {
+    it('does not become interactive without an onRate handler', () => {
+      const { container } = render(<StarRating rating={3} readonly={false} />);
+
+      // Sin onRate sigue siendo display, no botones
+      expect(container.querySelectorAll('button')).toHaveLength(0);
+      expect(screen.getByRole('img')).toBeInTheDocument();
+    });
+
+    it('renders 5 interactive star buttons when onRate is provided', () => {
+      const onRate = vi.fn();
+      render(<StarRating rating={0} onRate={onRate} />);
+
+      const buttons = screen.getAllByRole('radio');
+      expect(buttons).toHaveLength(5);
+      expect(screen.getByRole('radiogroup')).toBeInTheDocument();
+    });
+
+    it('calls onRate with the star value when clicked', () => {
+      const onRate = vi.fn();
+      render(<StarRating rating={0} onRate={onRate} />);
+
+      fireEvent.click(screen.getByLabelText('4 estrellas'));
+
+      expect(onRate).toHaveBeenCalledTimes(1);
+      expect(onRate).toHaveBeenCalledWith(4);
+    });
+
+    it('uses singular label for the first star', () => {
+      const onRate = vi.fn();
+      render(<StarRating rating={0} onRate={onRate} />);
+
+      expect(screen.getByLabelText('1 estrella')).toBeInTheDocument();
+    });
+
+    it('marks the selected star as checked via aria-checked', () => {
+      const onRate = vi.fn();
+      render(<StarRating rating={3} onRate={onRate} />);
+
+      expect(screen.getByLabelText('3 estrellas')).toHaveAttribute(
+        'aria-checked',
+        'true'
+      );
+      expect(screen.getByLabelText('4 estrellas')).toHaveAttribute(
+        'aria-checked',
+        'false'
+      );
+    });
+
+    it('disables the buttons when disabled is true', () => {
+      const onRate = vi.fn();
+      render(<StarRating rating={0} onRate={onRate} disabled={true} />);
+
+      screen.getAllByRole('radio').forEach((btn) => {
+        expect(btn).toBeDisabled();
+      });
     });
   });
 });

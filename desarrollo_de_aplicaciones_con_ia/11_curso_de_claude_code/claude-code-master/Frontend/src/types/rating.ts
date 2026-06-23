@@ -23,6 +23,9 @@ export interface RatingRequest {
 export interface RatingStats {
   average_rating: number; // 0.0 - 5.0
   total_ratings: number; // Cantidad total
+  // Desglose de cuántos votos hay por cada valor (1-5). El backend lo devuelve
+  // en /ratings/stats; opcional porque getRatingStats puede degradar a vacío.
+  rating_distribution?: Record<string, number>;
 }
 
 // Estados de UI para operaciones de rating

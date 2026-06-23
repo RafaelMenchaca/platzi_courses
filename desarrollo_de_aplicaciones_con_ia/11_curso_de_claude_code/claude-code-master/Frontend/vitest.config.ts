@@ -10,6 +10,13 @@ export default defineConfig({
     globals: true,
     setupFiles: ['./src/test/setup.ts'],
     include: ['src/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'],
+    // Mantener los nombres de clase de CSS Modules sin hash en los tests,
+    // para poder afirmar sobre clases (ej. toHaveClass('medium')).
+    css: {
+      modules: {
+        classNameStrategy: 'non-scoped',
+      },
+    },
   },
   resolve: {
     alias: {

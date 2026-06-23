@@ -119,6 +119,34 @@ make seed-fresh       # Reset completo de datos
 make logs             # Logs de todos los servicios
 ```
 
+> ⚠️ **Entorno Windows (este equipo): NO hay `make` disponible** en Git Bash/PowerShell.
+> Usar directamente `docker compose` (v2), que es exactamente lo que cada target del `Makefile`
+> ejecuta por debajo. Equivalencias (correr desde `Backend/`):
+>
+> | Target del Makefile | Equivalente `docker compose` en Windows |
+> |---|---|
+> | `make start`   | `docker compose up -d` |
+> | `make stop`    | `docker compose down`  *(sin `-v`: conserva los datos)* |
+> | `make logs`    | `docker compose logs -f` |
+> | `make build`   | `docker compose build api` |
+> | `make migrate` | `docker compose exec api bash -c "cd /app && uv run alembic -c app/alembic.ini upgrade head"` |
+> | `make seed`    | `docker compose exec api bash -c "cd /app && uv run python -m app.db.seed"` |
+> | `make seed-fresh` | `... -m app.db.seed clear` y luego `... -m app.db.seed` |
+>
+> - **Docker Desktop debe estar arrancado** antes de cualquier comando (el daemon no inicia solo).
+>   Esperar a que `docker info` responda.
+> - El API tiene **hot reload** (monta `./app` como volumen): los cambios de código se recargan
+>   solos, sin reconstruir la imagen.
+
+### Problemas conocidos del setup (ya resueltos una vez)
+- **`alembic`/dependencia no encontrada en el contenedor** → la imagen `backend-api` quedó cacheada
+  de antes de añadir la dependencia. Solución: `docker compose build api` y recrear con `up -d`.
+- **`password authentication failed for user "platziflix_user"`** → el volumen `backend_postgres_data`
+  se inicializó en un arranque previo con otras credenciales (Postgres solo crea el usuario en el
+  **primer** arranque con el volumen vacío; luego ignora `POSTGRES_PASSWORD`). Solución:
+  `docker compose down -v` para borrar el volumen y recrear (⚠️ borra la DB; volver a migrar + seed).
+- **No usar `down -v` en el día a día**: el `-v` elimina el volumen de Postgres y pierdes los datos.
+
 ### Configuración DB (Docker)
 Usuario `platziflix_user` · Pass `platziflix_password` · DB `platziflix_db` · puerto `5432`.
 
