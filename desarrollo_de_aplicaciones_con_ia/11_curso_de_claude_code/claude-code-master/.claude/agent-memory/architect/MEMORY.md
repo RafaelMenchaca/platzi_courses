@@ -1,0 +1,2 @@
+- [user_id mock 42](project_ratings_user_identity.md) — ratings sin auth: user_id fijo=42 en todos los clientes
+- [Base URL móvil divergente](project_mobile_base_url.md) — Android usa 10.0.2.2, iOS usa localhost; no centralizado
