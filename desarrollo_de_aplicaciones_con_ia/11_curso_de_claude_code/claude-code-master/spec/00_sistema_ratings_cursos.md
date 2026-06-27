@@ -23,6 +23,46 @@ BaseModel (id, created_at, updated_at, deleted_at)
 └── CourseTeacher (course_id, teacher_id) [Many-to-Many]
 ```
 
+## Anexo: ¿Cómo funciona un LLM? (demostración)
+
+Un **LLM** (Large Language Model / Modelo de Lenguaje Grande) es un modelo entrenado sobre
+enormes cantidades de texto que aprende a **predecir el siguiente token** (fragmento de palabra)
+dado el contexto anterior. No "busca" respuestas en una base de datos: estima, token a token, la
+continuación más probable según los patrones aprendidos.
+
+El flujo básico es:
+
+```
+Texto de entrada (prompt)
+        │
+        ▼
+  Tokenización   → "Califica este"  →  [Califica] [ este]
+        │
+        ▼
+  Modelo (red neuronal Transformer con atención)
+        │
+        ▼
+  Distribución de probabilidad sobre el próximo token
+        │  P(" curso") = 0.71 · P(" video") = 0.08 · P(" libro") = 0.05 ...
+        ▼
+  Se elige un token y se repite el ciclo
+        │
+        ▼
+  Texto de salida generado
+```
+
+**Ejemplo corto (demostración de que esto es un LLM):**
+
+> **Prompt:** "El sistema de ratings permite a los usuarios calificar un ___"
+>
+> **Predicción del LLM:** "curso" (alta probabilidad), porque en el contexto de Platziflix
+> los usuarios califican cursos. El modelo no consulta el código: deduce la palabra más probable
+> a partir del patrón del lenguaje y del contexto dado.
+
+Por eso un mismo prompt puede generar redacciones distintas (hay un componente de probabilidad), y
+por eso el LLM puede explicar, resumir o generar el código de este plan de ratings sin tener
+ninguna de las respuestas "memorizadas" literalmente.
+
 ## Plan de Implementación por Fases
 
 ### FASE 1: Database Layer (2 horas)
